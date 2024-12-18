@@ -32,7 +32,7 @@ public:
 
         uint32_t mod = 0;
 
-        static std::map<int, int> MapUSBKeys = {
+        static std::map<ImGuiKey, int> MapUSBKeys = {
             { ImGuiKey_F1, ExtKeys::F1 },
             { ImGuiKey_F2, ExtKeys::F2 },
             { ImGuiKey_F3, ExtKeys::F3 },
@@ -59,7 +59,7 @@ public:
             { ImGuiKey_PageDown, ExtKeys::PAGEDOWN },
             { ImGuiKey_PageUp, ExtKeys::PAGEUP }
         };
-        static std::map<int, int> MapShiftableUSBKeys = {
+        static std::map<ImGuiKey, int> MapShiftableUSBKeys = {
             { ImGuiKey_Apostrophe, '\'' },
             { ImGuiKey_Comma, ',' },
             { ImGuiKey_Minus, '-' },
@@ -71,6 +71,48 @@ public:
             { ImGuiKey_Backslash, '\\' },
             { ImGuiKey_RightBracket, ']' },
             { ImGuiKey_GraveAccent, '`' }
+        };
+        static std::map<ImGuiKey, int> MapKeys = {
+            // '0'-'1'
+            { ImGuiKey_0, '0' },
+            { ImGuiKey_1, '1' },
+            { ImGuiKey_2, '2' },
+            { ImGuiKey_3, '3' },
+            { ImGuiKey_4, '4' },
+            { ImGuiKey_5, '5' },
+            { ImGuiKey_6, '6' },
+            { ImGuiKey_7, '7' },
+            { ImGuiKey_8, '8' },
+            { ImGuiKey_9, '9' },
+            // 'a'-'z'
+            { ImGuiKey_A, 'a' },
+            { ImGuiKey_B, 'b' },
+            { ImGuiKey_C, 'c' },
+            { ImGuiKey_D, 'd' },
+            { ImGuiKey_E, 'e' },
+            { ImGuiKey_F, 'f' },
+            { ImGuiKey_G, 'g' },
+            { ImGuiKey_H, 'h' },
+            { ImGuiKey_I, 'i' },
+            { ImGuiKey_J, 'j' },
+            { ImGuiKey_K, 'k' },
+            { ImGuiKey_L, 'l' },
+            { ImGuiKey_M, 'm' },
+            { ImGuiKey_N, 'n' },
+            { ImGuiKey_O, 'o' },
+            { ImGuiKey_P, 'p' },
+            { ImGuiKey_Q, 'q' },
+            { ImGuiKey_R, 'r' },
+            { ImGuiKey_S, 's' },
+            { ImGuiKey_T, 't' },
+            { ImGuiKey_U, 'u' },
+            { ImGuiKey_V, 'v' },
+            { ImGuiKey_W, 'w' },
+            { ImGuiKey_X, 'x' },
+            { ImGuiKey_Y, 'y' },
+            { ImGuiKey_Z, 'z' },
+            // ' '
+            { ImGuiKey_Space, ' ' },
         };
 
         if (io.MouseDelta.x != 0 || io.MouseDelta.y != 0)
@@ -147,7 +189,7 @@ public:
         // Check USB Keys
         for (auto& usbKey : MapUSBKeys)
         {
-            if (ImGui::IsKeyPressed(ImGuiKey(usbKey.first)))
+            if (ImGui::IsKeyPressed(usbKey.first))
             {
                 pBuffer->GetMode()->AddKeyPress(usbKey.second, mod);
                 return;
@@ -159,88 +201,33 @@ public:
             // Check Shiftable USB Keys
             for (auto& usbKey : MapShiftableUSBKeys)
             {
-                if (ImGui::IsKeyPressed(ImGuiKey(usbKey.first)))
+                if (ImGui::IsKeyPressed(usbKey.first))
                 {
                     pBuffer->GetMode()->AddKeyPress(usbKey.second, mod);
                     return;
                 }
             }
-            // SDL Remaps to its own scancodes; and since we can't look them up in the standard IMGui list
-            // without modifying the ImGui base code, we have special handling here for CTRL.
-            // For the Win32 case, we use VK_A (ASCII) is handled below
-#if defined(_SDL_H) || defined(ZEP_USE_SDL)
-            if (ImGui::IsKeyPressed(ImGuiKey(KEY_1)))
+            if (ImGui::IsKeyPressed(ImGuiKey_1))
             {
                 SetGlobalMode(ZepMode_Standard::StaticName());
                 handled = true;
             }
-            else if (ImGui::IsKeyPressed(ImGuiKey(KEY_2)))
+            else if (ImGui::IsKeyPressed(ImGuiKey_2))
             {
                 SetGlobalMode(ZepMode_Vim::StaticName());
                 handled = true;
             }
             else
             {
-                for (int ch = KEY_1; ch <= KEY_0; ch++)
+                for (auto& key : MapKeys)
                 {
-                    if (ImGui::IsKeyPressed(ImGuiKey(ch)))
+                    if (ImGui::IsKeyPressed(key.first))
                     {
-                        pBuffer->GetMode()->AddKeyPress(ch == KEY_0 ? '0' : ch - KEY_1 + '1', mod);
+                        pBuffer->GetMode()->AddKeyPress(key.second, mod);
                         handled = true;
                     }
                 }
-                for (int ch = KEY_A; ch <= KEY_Z; ch++)
-                {
-                    if (ImGui::IsKeyPressed(ImGuiKey(ch)))
-                    {
-                        pBuffer->GetMode()->AddKeyPress((ch - KEY_A) + 'a', mod);
-                        handled = true;
-                    }
-                }
-
-                if (ImGui::IsKeyPressed(ImGuiKey(KEY_SPACE)))
-                {
-                    pBuffer->GetMode()->AddKeyPress(' ', mod);
-                    handled = true;
-                }
             }
-#else
-            if (ImGui::IsKeyPressed(ImGuiKey('1')))
-            {
-                SetGlobalMode(ZepMode_Standard::StaticName());
-                handled = true;
-            }
-            else if (ImGui::IsKeyPressed(ImGuiKey('2')))
-            {
-                SetGlobalMode(ZepMode_Vim::StaticName());
-                handled = true;
-            }
-            else
-            {
-                for (int ch = '0'; ch <= '9'; ch++)
-                {
-                    if (ImGui::IsKeyPressed(ImGuiKey(ch)))
-                    {
-                        pBuffer->GetMode()->AddKeyPress(ch, mod);
-                        handled = true;
-                    }
-                }
-                for (int ch = 'A'; ch <= 'Z'; ch++)
-                {
-                    if (ImGui::IsKeyPressed(ImGuiKey(ch)))
-                    {
-                        pBuffer->GetMode()->AddKeyPress(ch - 'A' + 'a', mod);
-                        handled = true;
-                    }
-                }
-
-                if (ImGui::IsKeyPressed(ImGuiKey(KEY_SPACE)))
-                {
-                    pBuffer->GetMode()->AddKeyPress(' ', mod);
-                    handled = true;
-                }
-            }
-#endif
         }
 
         if (!handled)
