@@ -55,7 +55,8 @@ enum : uint32_t
     DefaultBuffer = (1 << 8), // Default startup buffer
     HasTabs = (1 << 9),
     HasSpaceTabs = (1 << 10),
-    InsertTabs = (1 << 11)
+    InsertTabs = (1 << 11),
+    SoftTabTwo = (1 << 12), // Insert two spaces on tab
 };
 }
 
@@ -285,7 +286,6 @@ public:
     std::stack<std::shared_ptr<ZepCommand>>& GetUndoStack();
     std::stack<std::shared_ptr<ZepCommand>>& GetRedoStack();
 
-
 private:
     void MarkUpdate();
 
@@ -317,7 +317,7 @@ private:
     // Modes
     std::shared_ptr<ZepMode> m_spMode;
     fnKeyNotifier m_postKeyNotifier;
-    
+
     std::stack<std::shared_ptr<ZepCommand>> m_undoStack;
     std::stack<std::shared_ptr<ZepCommand>> m_redoStack;
 };

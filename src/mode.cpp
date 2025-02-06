@@ -1327,6 +1327,10 @@ bool ZepMode::GetCommand(CommandContext& context)
         {
             context.tempReg.text = "\t";
         }
+        else if (buffer.HasFileFlags(FileFlags::SoftTabTwo))
+        {
+            context.tempReg.text = "  ";
+        }
         else
         {
             context.tempReg.text = "    ";
