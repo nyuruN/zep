@@ -1188,10 +1188,7 @@ void ZepEditor::Display()
     }
 
     // Background rect for CommandLine
-    if (!GetCommandText().empty() || (GetConfig().autoHideCommandRegion == false))
-    {
-        m_pDisplay->DrawRectFilled(m_commandRegion->rect, ModifyBackgroundColor(GetTheme().GetColor(ThemeColor::Background)));
-    }
+    m_pDisplay->DrawRectFilled(m_commandRegion->rect, ModifyBackgroundColor(GetTheme().GetColor(ThemeColor::CommandLineBackground)));
 
     // Draw command text
     auto screenPosYPx = m_commandRegion->rect.topLeftPx + NVec2f(0.0f, DPI_X(textBorder));

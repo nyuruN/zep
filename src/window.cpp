@@ -1732,12 +1732,32 @@ void ZepWindow::Display()
 
     if (m_numberRegion->rect.Width() > 0)
     {
-        display.DrawRectFilled(m_numberRegion->rect, ModifyBackgroundColor(ThemeColor::LineNumberBackground));
+        // Fill part of the airline region if airline is not displayed.
+        if (GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideCommandRegion == true))
+        {
+            NRectf combinedRect = m_numberRegion->rect;
+            combinedRect.bottomRightPx.y = m_airlineRegion->rect.bottomRightPx.y;
+            display.DrawRectFilled(combinedRect, ModifyBackgroundColor(ThemeColor::LineNumberBackground));
+        }
+        else
+        {
+            display.DrawRectFilled(m_numberRegion->rect, ModifyBackgroundColor(ThemeColor::LineNumberBackground));
+        }
     }
 
     if (m_indicatorRegion->rect.Width() > 0)
     {
-        display.DrawRectFilled(m_indicatorRegion->rect, ModifyBackgroundColor(ThemeColor::LineNumberBackground));
+        // Fill part of the airline region if airline is not displayed.
+        if (GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideCommandRegion == true))
+        {
+            NRectf combinedRect = m_indicatorRegion->rect;
+            combinedRect.bottomRightPx.y = m_airlineRegion->rect.bottomRightPx.y;
+            display.DrawRectFilled(combinedRect, ModifyBackgroundColor(ThemeColor::LineNumberBackground));
+        }
+        else
+        {
+            display.DrawRectFilled(m_indicatorRegion->rect, ModifyBackgroundColor(ThemeColor::LineNumberBackground));
+        }
     }
 
     DisplayScrollers();

@@ -28,6 +28,7 @@ enum class ThemeColor
     VisualSelectBackground,
     CursorLineBackground,
     AirlineBackground,
+    CommandLineBackground,
     Mode,
     Normal,
     Keyword,

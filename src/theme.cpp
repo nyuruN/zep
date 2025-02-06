@@ -1,6 +1,6 @@
+#include "zep/theme.h"
 #include "zep/editor.h"
 #include "zep/syntax.h"
-#include "zep/theme.h"
 
 namespace Zep
 {
@@ -23,13 +23,13 @@ void ZepTheme::SetThemeType(ThemeType type)
     m_currentTheme = type;
     switch (type)
     {
-        default:
-        case ThemeType::Dark:
-            SetDarkTheme();
-            break;
-        case ThemeType::Light:
-            SetLightTheme();
-            break;
+    default:
+    case ThemeType::Dark:
+        SetDarkTheme();
+        break;
+    case ThemeType::Light:
+        SetLightTheme();
+        break;
     }
 }
 
@@ -41,6 +41,7 @@ ThemeType ZepTheme::GetThemeType() const
 void ZepTheme::SetDarkTheme()
 {
     m_colors[ThemeColor::AirlineBackground] = NVec4f(.20f, .20f, .20f, 1.0f);
+    m_colors[ThemeColor::CommandLineBackground] = NVec4f(0.11f, 0.11f, 0.11f, 1.0f);
     m_colors[ThemeColor::Background] = NVec4f(0.11f, 0.11f, 0.11f, 1.0f);
     m_colors[ThemeColor::Comment] = NVec4f(0.0f, 1.0f, .1f, 1.0f);
     m_colors[ThemeColor::CursorInsert] = NVec4f(1.0f, 1.0f, 1.0f, .9f);
@@ -80,6 +81,7 @@ void ZepTheme::SetDarkTheme()
 void ZepTheme::SetLightTheme()
 {
     m_colors[ThemeColor::AirlineBackground] = NVec4f(.80f, .80f, .80f, 1.0f);
+    m_colors[ThemeColor::CommandLineBackground] = NVec4f(1.0f, 1.0f, 1.0f, 1.0f);
     m_colors[ThemeColor::Background] = NVec4f(1.0f, 1.0f, 1.0f, 1.0f);
     m_colors[ThemeColor::Comment] = NVec4f(0.1f, .4f, .1f, 1.0f);
     m_colors[ThemeColor::CursorInsert] = NVec4f(1.0f, 1.0f, 1.0f, .9f);
@@ -108,7 +110,7 @@ void ZepTheme::SetLightTheme()
     m_colors[ThemeColor::Whitespace] = NVec4f(0.2f, .2f, .2f, 1.0f);
     m_colors[ThemeColor::WidgetBackground] = NVec4f(.8f, .8f, .8f, 1.0f);
     m_colors[ThemeColor::WidgetBorder] = NVec4f(.5f, .5f, .5f, 1.0f);
-    
+
     m_colors[ThemeColor::LineNumberBackground] = m_colors[ThemeColor::Background] - NVec4f(.02f, .02f, .02f, 0.0f);
     m_colors[ThemeColor::Normal] = m_colors[ThemeColor::Text];
     m_colors[ThemeColor::Parenthesis] = m_colors[ThemeColor::Text];
@@ -130,7 +132,7 @@ const NVec4f& ZepTheme::GetColor(ThemeColor themeColor) const
 {
     if (themeColor >= ThemeColor::UniqueColor0)
     {
-        // Return the unique color 
+        // Return the unique color
         return m_uniqueColors[((uint32_t)themeColor - (uint32_t)ThemeColor::UniqueColor0) % (uint32_t)ThemeColor::UniqueColorLast];
     }
 
