@@ -1041,7 +1041,14 @@ void ZepWindow::DisplayLineNumbers()
             // In Vim mode show relative lines, unless in Ex mode (with hidden cursor)
             if (mode->UsesRelativeLines() && mode->GetCursorType() != CursorType::None)
             {
-                strNum = std::to_string(std::abs(lineInfo.bufferLineNumber - cursorBufferLine));
+                if (lineInfo.bufferLineNumber == cursorBufferLine)
+                {
+                    strNum = std::to_string(lineInfo.bufferLineNumber + 1);
+                }
+                else
+                {
+                    strNum = std::to_string(std::abs(lineInfo.bufferLineNumber - cursorBufferLine));
+                }
             }
             else
             {
