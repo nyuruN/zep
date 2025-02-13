@@ -248,6 +248,7 @@ struct EditorConfig
     NVec2f inlineWidgetMargins = NVec2f(2.0f);
     float underlineHeight = 3.0f;
     bool showLineNumbers = true;
+    bool showTabBar = true;
     bool shortTabNames = true;
     bool tabToneColors = false;
     bool showIndicatorRegion = true;

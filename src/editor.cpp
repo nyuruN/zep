@@ -1137,7 +1137,7 @@ void ZepEditor::UpdateSize()
     const auto selectHeight = int(DPI_Y(tabSelectLine));
 
     // Add tabs for extra windows
-    if (GetTabWindows().size() > 1)
+    if (GetTabWindows().size() > 1 && GetConfig().showTabBar)
     {
         m_tabRegion->fixed_size = NVec2f(0.0f, uiFont.GetPixelHeight() + DPI_X(textBorder) * 2 + selectHeight);
         m_tabRegion->flags = RegionFlags::Fixed;
@@ -1266,86 +1266,89 @@ void ZepEditor::Display()
     m_tabOffsetX = std::min(m_tabOffsetX, 0.0f);
 
     // Now display the tabs
-    for (auto& tab : m_tabRegion->children)
+    if (GetConfig().showTabBar)
     {
-        auto spTabRegionTab = std::static_pointer_cast<TabRegionTab>(tab);
-
-        auto rc = spTabRegionTab->rect;
-        rc.Adjust(m_tabOffsetX, 0);
-        rc.SetHeight(rc.Height() - selectHeight);
-
-        auto toneColor = spTabRegionTab->color;
-
-        // I don't think tab window will ever be NULL!
-        // Adding a check here for the time being
-        assert(spTabRegionTab->pTabWindow);
-
-        if (GetEditor().GetConfig().tabToneColors)
+        for (auto& tab : m_tabRegion->children)
         {
-            if (spTabRegionTab->pTabWindow->GetActiveWindow() && spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor().w != 0.0f)
+            auto spTabRegionTab = std::static_pointer_cast<TabRegionTab>(tab);
+
+            auto rc = spTabRegionTab->rect;
+            rc.Adjust(m_tabOffsetX, 0);
+            rc.SetHeight(rc.Height() - selectHeight);
+
+            auto toneColor = spTabRegionTab->color;
+
+            // I don't think tab window will ever be NULL!
+            // Adding a check here for the time being
+            assert(spTabRegionTab->pTabWindow);
+
+            if (GetEditor().GetConfig().tabToneColors)
             {
-                toneColor = spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor();
-            }
-        }
-
-        if (spTabRegionTab->pTabWindow != GetActiveTabWindow())
-        {
-            toneColor = GetTheme().GetColor(ThemeColor::TabInactive);
-        }
-
-        auto backColor = ModifyBackgroundColor(toneColor);
-
-        auto& buffer = spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer();
-        if (buffer.HasFileFlags(FileFlags::HasWarnings) || buffer.HasFileFlags(FileFlags::HasErrors))
-        {
-            NVec4f overrideColor;
-            if (buffer.HasFileFlags(FileFlags::HasWarnings))
-            {
-                overrideColor = GetTheme().GetColor(ThemeColor::Warning);
+                if (spTabRegionTab->pTabWindow->GetActiveWindow() && spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor().w != 0.0f)
+                {
+                    toneColor = spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor();
+                }
             }
 
-            // Errors win for coloring
-            if (buffer.HasFileFlags(FileFlags::HasErrors))
+            if (spTabRegionTab->pTabWindow != GetActiveTabWindow())
             {
-                overrideColor = GetTheme().GetColor(ThemeColor::Error);
+                toneColor = GetTheme().GetColor(ThemeColor::TabInactive);
             }
 
-            m_pDisplay->DrawRectFilled(rc, backColor);
+            auto backColor = ModifyBackgroundColor(toneColor);
 
-            auto rcError = rc;
-            rcError.SetSize(NVec2f(uiFont.GetDefaultCharSize().x + textBorder, rc.Height()));
+            auto& buffer = spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer();
+            if (buffer.HasFileFlags(FileFlags::HasWarnings) || buffer.HasFileFlags(FileFlags::HasErrors))
+            {
+                NVec4f overrideColor;
+                if (buffer.HasFileFlags(FileFlags::HasWarnings))
+                {
+                    overrideColor = GetTheme().GetColor(ThemeColor::Warning);
+                }
 
-            m_pDisplay->DrawRectFilled(rcError, overrideColor);
-        }
-        else
-        {
-            m_pDisplay->DrawRectFilled(rc, backColor);
-        }
+                // Errors win for coloring
+                if (buffer.HasFileFlags(FileFlags::HasErrors))
+                {
+                    overrideColor = GetTheme().GetColor(ThemeColor::Error);
+                }
 
-        std::string text = spTabRegionTab->pTabWindow->GetName();
-        auto textCol = NVec4f(1.0f);
-        if (Luminosity(backColor) > .5f)
-        {
-            textCol.x = 0.0f;
-            textCol.y = 0.0f;
-            textCol.z = 0.0f;
-        }
+                m_pDisplay->DrawRectFilled(rc, backColor);
 
-        // Tab background rect
-        // Tab text
-        m_pDisplay->DrawChars(uiFont, rc.topLeftPx + DPI_VEC2(NVec2f(textBorder, textBorder)), textCol, (const uint8_t*)text.c_str());
+                auto rcError = rc;
+                rcError.SetSize(NVec2f(uiFont.GetDefaultCharSize().x + textBorder, rc.Height()));
 
-        auto drawTabLine = [&](auto yPos, auto col, auto height) {
-            m_pDisplay->DrawRectFilled(NRectf(rc.Left(), yPos, rc.Width(), height), ModifyBackgroundColor(col));
-        };
+                m_pDisplay->DrawRectFilled(rcError, overrideColor);
+            }
+            else
+            {
+                m_pDisplay->DrawRectFilled(rc, backColor);
+            }
 
-        if (spTabRegionTab->pTabWindow == GetActiveTabWindow())
-        {
-            drawTabLine(rc.Bottom(), GetTheme().GetColor(ThemeColor::TabActive), selectHeight);
-        }
-        else
-        {
-            drawTabLine(rc.Bottom(), GetTheme().GetColor(ThemeColor::TabInactive), selectHeight);
+            std::string text = spTabRegionTab->pTabWindow->GetName();
+            auto textCol = NVec4f(1.0f);
+            if (Luminosity(backColor) > .5f)
+            {
+                textCol.x = 0.0f;
+                textCol.y = 0.0f;
+                textCol.z = 0.0f;
+            }
+
+            // Tab background rect
+            // Tab text
+            m_pDisplay->DrawChars(uiFont, rc.topLeftPx + DPI_VEC2(NVec2f(textBorder, textBorder)), textCol, (const uint8_t*)text.c_str());
+
+            auto drawTabLine = [&](auto yPos, auto col, auto height) {
+                m_pDisplay->DrawRectFilled(NRectf(rc.Left(), yPos, rc.Width(), height), ModifyBackgroundColor(col));
+            };
+
+            if (spTabRegionTab->pTabWindow == GetActiveTabWindow())
+            {
+                drawTabLine(rc.Bottom(), GetTheme().GetColor(ThemeColor::TabActive), selectHeight);
+            }
+            else
+            {
+                drawTabLine(rc.Bottom(), GetTheme().GetColor(ThemeColor::TabInactive), selectHeight);
+            }
         }
     }
 
