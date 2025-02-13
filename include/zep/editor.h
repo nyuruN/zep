@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+#include <limits>
 #include <map>
 #include <memory>
 #include <ostream>
@@ -7,8 +9,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <limits>
-#include <filesystem>
 
 #include "zep_config.h"
 
@@ -217,7 +217,7 @@ struct SyntaxProvider
 
 const float bottomBorder = 2.0f;
 const float textBorder = 2.0f;
-const float tabSelectLine = 8.0f;
+const float tabSelectLine = 6.0f;
 const float tabSpacing = 1.0f;
 const float leftBorderChars = 4;
 
@@ -273,7 +273,7 @@ public:
     {
         return StringId(ExCommandName());
     }
-    virtual void Init(){};
+    virtual void Init() {};
     virtual const KeyMap* GetKeyMappings(ZepMode&) const
     {
         return nullptr;

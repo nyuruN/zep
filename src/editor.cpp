@@ -1278,24 +1278,19 @@ void ZepEditor::Display()
 
         // I don't think tab window will ever be NULL!
         // Adding a check here for the time being
-        std::string text;
         assert(spTabRegionTab->pTabWindow);
 
         if (GetEditor().GetConfig().tabToneColors)
         {
-            if (spTabRegionTab->pTabWindow)
+            if (spTabRegionTab->pTabWindow->GetActiveWindow() && spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor().w != 0.0f)
             {
-                text = spTabRegionTab->pTabWindow->GetName();
-                if (spTabRegionTab->pTabWindow->GetActiveWindow() && spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor().w != 0.0f)
-                {
-                    toneColor = spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor();
-                }
+                toneColor = spTabRegionTab->pTabWindow->GetActiveWindow()->GetBuffer().GetToneColor();
             }
         }
 
         if (spTabRegionTab->pTabWindow != GetActiveTabWindow())
         {
-            toneColor *= NVec4f(0.4f, 0.4f, 0.4f, 1.0f);
+            toneColor = GetTheme().GetColor(ThemeColor::TabInactive);
         }
 
         auto backColor = ModifyBackgroundColor(toneColor);
@@ -1327,9 +1322,9 @@ void ZepEditor::Display()
             m_pDisplay->DrawRectFilled(rc, backColor);
         }
 
-        auto lum = Luminosity(backColor);
+        std::string text = spTabRegionTab->pTabWindow->GetName();
         auto textCol = NVec4f(1.0f);
-        if (lum > .5f)
+        if (Luminosity(backColor) > .5f)
         {
             textCol.x = 0.0f;
             textCol.y = 0.0f;
@@ -1341,13 +1336,16 @@ void ZepEditor::Display()
         m_pDisplay->DrawChars(uiFont, rc.topLeftPx + DPI_VEC2(NVec2f(textBorder, textBorder)), textCol, (const uint8_t*)text.c_str());
 
         auto drawTabLine = [&](auto yPos, auto col, auto height) {
-            m_pDisplay->DrawRectFilled(NRectf(rc.Left(), yPos, rc.Width(), float(height / 2)), ModifyBackgroundColor(NVec4f(0.0f, 0.0f, 0.0f, 1.0f)));
-            m_pDisplay->DrawRectFilled(NRectf(rc.Left(), yPos + height / 2, rc.Width(), float(height / 2)), ModifyBackgroundColor(col));
+            m_pDisplay->DrawRectFilled(NRectf(rc.Left(), yPos, rc.Width(), height), ModifyBackgroundColor(col));
         };
 
         if (spTabRegionTab->pTabWindow == GetActiveTabWindow())
         {
             drawTabLine(rc.Bottom(), GetTheme().GetColor(ThemeColor::TabActive), selectHeight);
+        }
+        else
+        {
+            drawTabLine(rc.Bottom(), GetTheme().GetColor(ThemeColor::TabInactive), selectHeight);
         }
     }
 
