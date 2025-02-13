@@ -252,7 +252,8 @@ struct EditorConfig
     bool shortTabNames = true;
     bool tabToneColors = false;
     bool showIndicatorRegion = true;
-    bool autoHideCommandRegion = true;
+    bool autoHideCommandRegion = false;
+    bool autoHideAirlineRegion = true;
     bool cursorLineSolid = false;
     bool showNormalModeKeyStrokes = false;
     bool searchGitRoot = true;
@@ -362,6 +363,7 @@ public:
     void NextTabWindow();
     void PreviousTabWindow();
     void SetCurrentTabWindow(ZepTabWindow* pTabWindow);
+    void SetCurrentTabWindowUnchecked(ZepTabWindow* pTabWindow);
     void SetCurrentWindow(ZepWindow* pWindow);
     ZepTabWindow* GetActiveTabWindow() const;
     ZepTabWindow* AddTabWindow();

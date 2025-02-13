@@ -193,7 +193,9 @@ void ZepEditor::LoadConfig(std::shared_ptr<cpptoml::table> spConfig)
         m_config.showNormalModeKeyStrokes = spConfig->get_qualified_as<bool>("editor.show_normal_mode_keystrokes").value_or(false);
         m_config.showIndicatorRegion = spConfig->get_qualified_as<bool>("editor.show_indicator_region").value_or(true);
         m_config.showLineNumbers = spConfig->get_qualified_as<bool>("editor.show_line_numbers").value_or(true);
+        m_config.showTabBar = spConfig->get_qualified_as<bool>("editor.show_tab_bar").value_or(true);
         m_config.autoHideCommandRegion = spConfig->get_qualified_as<bool>("editor.autohide_command_region").value_or(false);
+        m_config.autoHideAirlineRegion = spConfig->get_qualified_as<bool>("editor.autohide_airline_region").value_or(true);
         m_config.cursorLineSolid = spConfig->get_qualified_as<bool>("editor.cursor_line_solid").value_or(true);
         m_config.backgroundFadeTime = (float)spConfig->get_qualified_as<double>("editor.background_fade_time").value_or(60.0f);
         m_config.backgroundFadeWait = (float)spConfig->get_qualified_as<double>("editor.background_fade_wait").value_or(60.0f);
@@ -233,6 +235,7 @@ void ZepEditor::SaveConfig(std::shared_ptr<cpptoml::table> spConfig)
     }
 
     table->insert("autohide_command_region", m_config.autoHideCommandRegion);
+    table->insert("autohide_airline_region", m_config.autoHideAirlineRegion);
     table->insert("background_fade_time", (double)m_config.backgroundFadeTime);
     table->insert("background_fade_wait", (double)m_config.backgroundFadeWait);
     table->insert("cursor_line_solid", m_config.cursorLineSolid);
@@ -243,6 +246,7 @@ void ZepEditor::SaveConfig(std::shared_ptr<cpptoml::table> spConfig)
     table->insert("search_git_root", m_config.searchGitRoot);
     table->insert("show_indicator_region", m_config.showIndicatorRegion);
     table->insert("show_line_numbers", m_config.showLineNumbers);
+    table->insert("show_tab_bar", m_config.showTabBar);
     table->insert("show_normal_mode_keystrokes", m_config.showNormalModeKeyStrokes);
     table->insert("show_scrollbar", m_config.showScrollBar);
     table->insert("widget_margin_bottom", m_config.widgetMargins.y);
@@ -629,6 +633,11 @@ void ZepEditor::SetCurrentTabWindow(ZepTabWindow* pTabWindow)
         // Force a reactivation of the active window to ensure buffer setup is correct
         m_pActiveTabWindow->SetActiveWindow(m_pActiveTabWindow->GetActiveWindow());
     }
+}
+
+void ZepEditor::SetCurrentTabWindowUnchecked(ZepTabWindow* pTabWindow)
+{
+    m_pActiveTabWindow = pTabWindow;
 }
 
 ZepTabWindow* ZepEditor::GetActiveTabWindow() const
@@ -1131,8 +1140,16 @@ void ZepEditor::UpdateSize()
     auto displaySize = m_editorRegion->rect.Size();
 
     // Regions
-    m_commandRegion->fixed_size = NVec2f(0.0f, commandSize);
-    m_commandRegion->flags = RegionFlags::Fixed;
+    if (GetCommandLines().size() <= 1 && GetCommandLines()[0].empty() && GetConfig().autoHideCommandRegion)
+    {
+        m_commandRegion->fixed_size = NVec2f(0.0f);
+        m_commandRegion->flags = RegionFlags::Fixed;
+    }
+    else
+    {
+        m_commandRegion->fixed_size = NVec2f(0.0f, commandSize);
+        m_commandRegion->flags = RegionFlags::Fixed;
+    }
 
     const auto selectHeight = int(DPI_Y(tabSelectLine));
 

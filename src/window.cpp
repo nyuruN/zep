@@ -1740,7 +1740,7 @@ void ZepWindow::Display()
     if (m_numberRegion->rect.Width() > 0)
     {
         // Fill part of the airline region if airline is not displayed.
-        if (GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideCommandRegion == true))
+        if (GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideAirlineRegion == true))
         {
             NRectf combinedRect = m_numberRegion->rect;
             combinedRect.bottomRightPx.y = m_airlineRegion->rect.bottomRightPx.y;
@@ -1755,7 +1755,7 @@ void ZepWindow::Display()
     if (m_indicatorRegion->rect.Width() > 0)
     {
         // Fill part of the airline region if airline is not displayed.
-        if (GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideCommandRegion == true))
+        if (GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideAirlineRegion == true))
         {
             NRectf combinedRect = m_indicatorRegion->rect;
             combinedRect.bottomRightPx.y = m_airlineRegion->rect.bottomRightPx.y;
@@ -1880,7 +1880,7 @@ void ZepWindow::Display()
 
     display.SetClipRect(NRectf{});
 
-    if (!GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideCommandRegion == false))
+    if (!GetEditor().GetCommandText().empty() || (GetEditor().GetConfig().autoHideAirlineRegion == false))
     {
         auto modeAirlines = GetBuffer().GetMode()->GetAirlines(*this);
 
