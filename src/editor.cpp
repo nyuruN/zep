@@ -9,8 +9,6 @@
 #include "zep/syntax_providers.h"
 #include "zep/tab_window.h"
 
-#include "config_app.h"
-
 #include <unordered_set>
 
 namespace Zep
