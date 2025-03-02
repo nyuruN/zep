@@ -17,7 +17,7 @@
 // than out to the console sometimes, and as long as you are building on Windows, you are referencing the necessary
 // kernel32.dll....
 extern "C" {
-__declspec(dllimport) void __stdcall OutputDebugStringA(_In_opt_ const char* pszChar);
+__declspec(dllimport) void __stdcall OutputDebugStringA(/* _In_opt_ */ const char* pszChar);
 }
 #endif
 
@@ -83,6 +83,7 @@ public:
     }
 
     static bool disabled;
+
 private:
     bool opened = false;
     ZLT msglevel = ZLT::DBG;
@@ -92,23 +93,23 @@ private:
         switch (type)
         {
         case ZLT::DBG:
-                label = "DEBUG";
-                break;
+            label = "DEBUG";
+            break;
         case ZLT::INFO:
-                label = "INFO ";
-                break;
+            label = "INFO ";
+            break;
         case ZLT::WARNING:
-                label = "WARN ";
-                break;
+            label = "WARN ";
+            break;
         case ZLT::ERROR:
-                label = "ERROR";
-                break;
+            label = "ERROR";
+            break;
         case ZLT::ALWAYS:
-                label = "ALWAYS";
-                break;
+            label = "ALWAYS";
+            break;
         case ZLT::NONE:
-                label = "NONE";
-                break;
+            label = "NONE";
+            break;
         }
         return label;
     }
